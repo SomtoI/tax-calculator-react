@@ -1,9 +1,10 @@
+import { useEffect, useState } from "react";
+import Metrics from "./Metrics";
+import TaxDisplay from "./TaxDisplay";
+import { TaxProvider } from "../context/TaxContext";
+import { TaxBracketProvider } from "../context/TaxBracketContext";
 
-import { useEffect, useState } from 'react';
-import Metrics from './Metrics';
-import { TaxProvider } from '../utils/TaxContext';
-
-import data from '../data/years.json';
+import data from "../data/years.json";
 
 function TaxCalculator() {
   const [years, setYears] = useState<string[]>([]);
@@ -14,15 +15,17 @@ function TaxCalculator() {
      The list of years would likely be fetched and prepopulated and not hard-coded.
     */
     setYears(data);
-    
   }, []);
 
   return (
     <TaxProvider>
-      <div>
-        <h1>Tax Calculator</h1>
-        <Metrics years={years} />
-      </div>
+      <TaxBracketProvider>
+        <div>
+          <h1>Tax Calculator</h1>
+          <Metrics years={years} />
+          <TaxDisplay />
+        </div>
+      </TaxBracketProvider>
     </TaxProvider>
   );
 }
