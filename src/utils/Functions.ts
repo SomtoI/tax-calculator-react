@@ -32,9 +32,14 @@ export function calculateTax(
       // No more income to tax
       break;
     }
-
+    let taxableIncome = 0;
     if (income > min) {
-      const taxableIncome = Math.min(upperBound, remainingIncome) - min;
+      if (Math.min(upperBound, remainingIncome) === upperBound) {
+        taxableIncome = Math.min(upperBound, remainingIncome) - min;
+      } else {
+        taxableIncome = Math.min(upperBound, remainingIncome);
+      }
+
       const taxForBand = taxableIncome * rate;
       totalTaxes += taxForBand;
       taxesPerBand.push({
