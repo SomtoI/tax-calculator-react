@@ -1,0 +1,14 @@
+.tax-display {
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 10px;
+}
+
+.error-message {
+  color: red;
+}
+
+.loading-message {
+  font-style: italic;
+}

@@ -1,90 +1,122 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import { useTax } from "../context/TaxContext";
-import { useTaxBracket } from "../context/TaxBracketContext";
+import { useError } from "../context/ErrorContext";
 import { calculateTax, TaxBracket } from "../utils/Functions";
-
-interface MetricsProps {
-  years: string[];
-}
+import { handleApiError } from "../utils/errorHandler";
+import "../css/Metrics.css";
 
 interface TaxBracketResponse {
   tax_brackets: TaxBracket[]; // Define the structure of your tax brackets
 }
 
-const Metrics = ({ years }: MetricsProps) => {
-  const { annualIncome, taxYear, setAnnualIncome, setTaxYear, setTaxOwed } =
-    useTax();
-  const { taxBrackets, setTaxBrackets } = useTaxBracket();
+const Metrics = () => {
+  const {
+    annualIncome,
+    taxYear,
+    setAnnualIncome,
+    setTaxYear,
+    setTaxOwed,
+    setLoading,
+  } = useTax();
+  const { setError } = useError();
+  const [incomeError, setIncomeError] = useState<string | null>(null);
+  const [taxYearError, setTaxYearError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Fetch the tax brackets data based on the selected year when year changes
-    const fetchTaxBrackets = async () => {
-      try {
-        const response = await fetch(`/tax-calculator/`);
-        //tax-year/${taxYear}
-        if (response.ok) {
-          const data: TaxBracketResponse =
-            (await response.json()) as TaxBracketResponse;
-          if (Array.isArray(data.tax_brackets)) {
-            // Assuming that the API response contains an array of tax brackets
-            setTaxBrackets(data.tax_brackets);
-          } else {
-            // Handle unexpected data structure
-            console.error("Unexpected data structure in API response");
-          }
-        } else {
-          // Handle non-OK response
-          console.error("API request failed with status:", response.status);
-        }
-      } catch (error) {
-        // Handle API request errors
-        console.error("Error while fetching tax brackets:", error);
+  const handleCalculateTax = async () => {
+    try {
+      // Reset states before making the API request
+      setError(null);
+      setTaxOwed(null);
+      setLoading(true);
+
+      const response = await fetch(`/tax-calculator/tax-year/${taxYear}`);
+
+      if (!response.ok) {
+        const error = handleApiError(response);
+        setError(error[0].message);
+        setLoading(false);
+        return;
       }
-    };
 
-    fetchTaxBrackets().catch((error) => {
-      // Handle any uncaught promise rejections here
-      console.error("Uncaught promise rejection:", error);
-    }); // Fetch when the component mounts and when year changes
-  }, [taxYear, setTaxBrackets]);
+      const data: TaxBracketResponse =
+        (await response.json()) as TaxBracketResponse;
 
-  const handleCalculateTax = () => {
-    // Calculate the tax owed based on the input salary and the fetched tax brackets
-    // Implement your tax calculation logic here
-    // Set the result in the state variable taxOwed
-    const calculatedTax = calculateTax(
-      annualIncome,
-      taxBrackets as TaxBracket[]
-    );
-    setTaxOwed(calculatedTax);
+      if (!Array.isArray(data.tax_brackets)) {
+        setError("Something went wrong");
+        throw new Error("Unexpected data structure in API response");
+      }
+
+      // Calculate tax and set the result
+      const calculatedTax = calculateTax(
+        Number(annualIncome),
+        data.tax_brackets
+      );
+
+      setLoading(false);
+      setTaxOwed(calculatedTax);
+    } catch (error: unknown) {
+      console.error("Error in API request: ", (error as Error).message);
+      setLoading(false);
+    }
   };
 
   return (
     <div>
       <h2>Tax Metrics</h2>
-      <form>
-        <div>
+      <form className="tax-form">
+        <div className="input-container">
           <label>Annual Income:</label>
           <input
-            type="number"
+            className={incomeError ? "error" : ""}
+            type="text"
             value={annualIncome}
-            onChange={(e) => setAnnualIncome(Number(e.target.value))}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              // Checking Input is a valid positive number
+              if (/^\d+(\.\d*)?$/.test(value) && parseFloat(value) > 0) {
+                setAnnualIncome(parseFloat(value));
+                setIncomeError(null);
+              } else {
+                setIncomeError("Annual income must be a positive number.");
+              }
+            }}
           />
         </div>
-        <div>
+        <div className="input-container">
           <label>Tax Year:</label>
-          <select value={taxYear} onChange={(e) => setTaxYear(e.target.value)}>
-            {years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
+          <input
+            className={taxYearError ? "error" : ""}
+            type="text"
+            value={taxYear}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              //regex to test value input only contains digits
+              if (
+                value === "" ||
+                (/^\d+$/.test(value) && parseInt(value) > 0)
+              ) {
+                setTaxYear(value);
+                setTaxYearError(null);
+              } else {
+                setTaxYearError("Tax year must be a positive Whole Number.");
+              }
+            }}
+          />
         </div>
-        <button type="button" onClick={handleCalculateTax}>
+        <button
+          type="button"
+          onClick={handleCalculateTax}
+          disabled={
+            incomeError !== null || taxYearError !== null || taxYear === ""
+          }
+        >
           Calculate Tax Owed
         </button>
       </form>
+      {incomeError && <p className="error-message">{incomeError}</p>}
+      {taxYearError && <p className="error-message">{taxYearError}</p>}
     </div>
   );
 };

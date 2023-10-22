@@ -1,12 +1,19 @@
 import { useTax } from "../context/TaxContext";
+import { useError } from "../context/ErrorContext";
+import "../css/TaxDisplay.css";
 
 function TaxDisplay() {
-  const { taxOwed } = useTax();
+  const { taxOwed, loading } = useTax();
+  const { error } = useError();
 
   return (
-    <div>
+    <div className="tax-display">
       <h3>Tax Results:</h3>
-      {taxOwed ? (
+      {loading ? (
+        <p className="loading-message">Loading...</p>
+      ) : error ? (
+        <p className="error-message">{error}</p>
+      ) : taxOwed ? (
         <div>
           <p>Total Taxes Owed: ${taxOwed.totalTaxes.toFixed(2)}</p>
           <p>Effective Tax Rate: {taxOwed.effectiveRate.toFixed(2)}%</p>

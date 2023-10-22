@@ -2,10 +2,13 @@ import { TaxCalculationResult } from "../context/TaxContext";
 
 export type TaxBracket = {
   min: number;
-  max: number | undefined; // Use 'undefined' for the last bracket
+  max: number | undefined; // Use 'undefined' for the last band
   rate: number;
 };
 
+// Calculate the tax owed based on the input salary and the fetched tax brackets
+// Tax calculation logic here
+// Set the result in the state variable calculatedTax
 export function calculateTax(
   income: number,
   taxBrackets: TaxBracket[]

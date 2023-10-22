@@ -15,9 +15,11 @@ type TaxContextType = {
   annualIncome: number;
   taxYear: string;
   taxOwed: TaxCalculationResult | null;
+  loading: boolean;
   setAnnualIncome: (income: number) => void;
   setTaxYear: (year: string) => void;
   setTaxOwed: (tax: TaxCalculationResult | null) => void;
+  setLoading: (isLoading: boolean) => void;
 };
 
 const TaxContext = createContext<TaxContextType | undefined>(undefined);
@@ -26,6 +28,7 @@ export function TaxProvider({ children }: { children: ReactNode }) {
   const [annualIncome, setAnnualIncome] = useState<number>(0);
   const [taxYear, setTaxYear] = useState<string>("");
   const [taxOwed, setTaxOwed] = useState<TaxCalculationResult | null>(null);
+  const [loading, setLoading] = useState(false);
 
   return (
     <TaxContext.Provider
@@ -33,9 +36,11 @@ export function TaxProvider({ children }: { children: ReactNode }) {
         annualIncome,
         taxYear,
         taxOwed,
+        loading,
         setAnnualIncome,
         setTaxYear,
         setTaxOwed,
+        setLoading,
       }}
     >
       {children}
