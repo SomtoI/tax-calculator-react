@@ -39,6 +39,12 @@ const Metrics = () => {
     fetch(`/tax-calculator/tax-year/${taxYear}`)
       .then(async (response) => {
         if (!response.ok) {
+          /**
+           * Error Handling to handle multiple error statuses and provide custom error message
+           * @param response response message with code returned from call
+           * Originally thought to handle 500 code with retry to a certain number
+           * Could use asynce.retry, or write custom retry handler, but kept simple for assessment purposes
+           */
           const error = handleApiError(response);
           setError(error[0].message);
           setLoading(false);
