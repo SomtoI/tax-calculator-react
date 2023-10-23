@@ -5,10 +5,17 @@ export type TaxBracket = {
   max: number | undefined; // Use 'undefined' for the last band
   rate: number;
 };
-
-// Calculate the tax owed based on the input salary and the fetched tax brackets
-// Tax calculation logic here
-// Set the result in the state variable calculatedTax
+/**
+ * Calculate the tax owed based on the input salary and the provided tax brackets.
+ * Tax calculation logic here:
+ * - Tax per band is calculated by multiplying the income in a given bracket by the tax rate.
+ * - Maximum of the upper bound and income for that bracket is used.
+ * - Function assumes that there is no limit in the last band and that the first band starts at zero.
+ *
+ * @param {number} income - The annual income to calculate tax for.
+ * @param {TaxBracket[]} taxBrackets - An array of tax brackets containing the minimum and maximum income limits and the corresponding tax rates.
+ * @returns {TaxCalculationResult} An object containing the total taxes, taxes per band, and the effective tax rate.
+ */
 export function calculateTax(
   income: number,
   taxBrackets: TaxBracket[]
@@ -35,6 +42,7 @@ export function calculateTax(
       // No more income to tax
       break;
     }
+
     let taxableIncome = 0;
     if (income > min) {
       if (Math.min(upperBound, remainingIncome) === upperBound) {
@@ -62,6 +70,5 @@ export function calculateTax(
     taxesPerBand,
     effectiveRate,
   };
-  console.log(calculatedTax);
   return calculatedTax;
 }

@@ -6,9 +6,13 @@ import { handleApiError } from "../utils/errorHandler";
 import "../css/Metrics.css";
 
 interface TaxBracketResponse {
-  tax_brackets: TaxBracket[]; // Define the structure of your tax brackets
+  tax_brackets: TaxBracket[]; // Define the structure of tax brackets response from API Call
 }
 
+/**
+ * Metrics component responsible for inputting annual income and tax year, as well as calculating tax owed.
+ * Gets variables and functions from context hooks imported
+ */
 const Metrics = () => {
   const {
     annualIncome,
@@ -22,6 +26,9 @@ const Metrics = () => {
   const [incomeError, setIncomeError] = useState<string | null>(null);
   const [taxYearError, setTaxYearError] = useState<string | null>(null);
 
+  /**
+   * Handles the calculation of tax owed based on the input values and the fetched tax brackets.
+   */
   const handleCalculateTax = async () => {
     try {
       // Reset states before making the API request
@@ -65,8 +72,9 @@ const Metrics = () => {
       <h2>Tax Metrics</h2>
       <form className="tax-form">
         <div className="input-container">
-          <label>Annual Income:</label>
+          <label htmlFor="annualIncomeInput">Annual Income:</label>
           <input
+            id="annualIncomeInput"
             className={incomeError ? "error" : ""}
             type="text"
             value={annualIncome}
@@ -84,8 +92,9 @@ const Metrics = () => {
           />
         </div>
         <div className="input-container">
-          <label>Tax Year:</label>
+          <label htmlFor="taxYearInput">Tax Year:</label>
           <input
+            id="taxYearInput"
             className={taxYearError ? "error" : ""}
             type="text"
             value={taxYear}

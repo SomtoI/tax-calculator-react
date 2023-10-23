@@ -18,12 +18,15 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "types": ["jest", "@testing-library/jest-dom"],
   },
   "include": [
     "vite.config.ts",
     ".eslintrc.cjs",
+    "jest.config.js",
     "src"
   ],
+  
   "references": [{ "path": "./tsconfig.node.json" }]
 }
