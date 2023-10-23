@@ -29,6 +29,8 @@ input {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 3px;
+  color: black;
+  background-color: #ffffff;
 }
 
 input.error {
@@ -38,15 +40,15 @@ input.error {
 button {
   width: 100%;
   padding: 10px;
-  background-color: #0073e6;
-  color: black;
+  background-color: #0073e6 !important;
+  color: white;
   border: none;
   border-radius: 3px;
   cursor: pointer;
 }
 
 button:disabled {
-  background-color: #ccc;
+  background-color: #ccc !important;
   color: white;
   cursor: not-allowed;
 }
