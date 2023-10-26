@@ -44,24 +44,16 @@ export function calculateTax(
       break;
     }
 
-    let taxableIncome = 0;
-    if (numIncome > min) {
-      if (Math.min(upperBound, remainingIncome) === upperBound) {
-        taxableIncome = Math.min(upperBound, remainingIncome) - min;
-      } else {
-        taxableIncome = Math.min(upperBound, remainingIncome);
-      }
-
-      const taxForBand = taxableIncome * rate;
-      totalTaxes += taxForBand;
-      taxesPerBand.push({
-        min,
-        max,
-        rate,
-        tax: taxForBand,
-      });
-      remainingIncome -= taxableIncome;
-    }
+    const taxableIncome = Math.min(upperBound, numIncome) - min;
+    const taxForBand = taxableIncome * rate;
+    totalTaxes += taxForBand;
+    taxesPerBand.push({
+      min,
+      max,
+      rate,
+      tax: taxForBand,
+    });
+    remainingIncome -= taxableIncome;
   }
 
   const effectiveRate = (totalTaxes / numIncome) * 100; // as a percentage
